@@ -24,6 +24,7 @@ import os
 import random
 import torchvision
 import h5py
+from pathlib import Path
 
 from distributed_sampler_no_evenly_divisible import *
 
@@ -106,6 +107,7 @@ class DataLoadPreprocess(Dataset):
                 depth_path = os.path.join(self.args.gt_path, "./" + sample_path.split()[1])
 
             if image_path.endswith('.h5'):
+                image_path = Path(image_path).resolve().as_posix()
                 h5f = h5py.File(image_path, "r")
                 image = np.array(h5f['rgb'])
                 image = np.transpose(image, (1, 2, 0))
