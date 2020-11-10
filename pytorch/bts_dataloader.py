@@ -107,6 +107,7 @@ class DataLoadPreprocess(Dataset):
                 depth_path = os.path.join(self.args.gt_path, "./" + sample_path.split()[1])
 
             if image_path.endswith('.h5'):
+                assert Path(image_path).resolve().exists(), "h5 file does not exist!"
                 image_path = Path(image_path).resolve().as_posix()
                 h5f = h5py.File(image_path, "r")
                 image = np.array(h5f['rgb'])
