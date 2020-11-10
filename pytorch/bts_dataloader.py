@@ -22,6 +22,8 @@ from torchvision import transforms
 from PIL import Image
 import os
 import random
+import torchvision
+import h5py
 
 from distributed_sampler_no_evenly_divisible import *
 
@@ -102,9 +104,23 @@ class DataLoadPreprocess(Dataset):
             else:
                 image_path = os.path.join(self.args.data_path, "./" + sample_path.split()[0])
                 depth_path = os.path.join(self.args.gt_path, "./" + sample_path.split()[1])
-            s = (640, 480)
-            image = Image.open(image_path).resize(s)
-            depth_gt = Image.open(depth_path).resize(s)
+
+            if image_path.endswith('.h5'):
+                h5f = h5py.File(image_path, "r")
+                image = np.array(h5f['rgb'])
+                image = np.transpose(image, (1, 2, 0))
+                depth_gt = np.array(h5f['depth']) * 1000
+            else:            
+                image = Image.open(image_path)
+                depth_gt = Image.open(depth_path)
+
+            if not depth_gt.size == (640, 480):
+                resize = torchvision.transforms.Resize(480)
+                image = resize(image)
+                depth_gt = resize(depth_gt)
+                ccrop = torchvision.transforms.CenterCrop((480, 640))
+                image = ccrop(image)
+                depth_gt = ccrop(depth_gt)
             
             if self.args.do_kb_crop is True:
                 height = image.height
@@ -144,14 +160,14 @@ class DataLoadPreprocess(Dataset):
                 data_path = self.args.data_path
 
             image_path = os.path.join(data_path, "./" + sample_path.split()[0])
-            image = np.asarray(Image.open(image_path).resize((640, 480)), dtype=np.float32) / 255.0
+            image = np.asarray(Image.open(image_path)), dtype=np.float32) / 255.0
 
             if self.mode == 'online_eval':
                 gt_path = self.args.gt_path_eval
                 depth_path = os.path.join(gt_path, "./" + sample_path.split()[1])
                 has_valid_depth = False
                 try:
-                    depth_gt = Image.open(depth_path).resize((640, 480))
+                    depth_gt = Image.open(depth_path)
                     has_valid_depth = True
                 except IOError:
                     depth_gt = False
