@@ -113,6 +113,8 @@ class DataLoadPreprocess(Dataset):
                 image = np.array(h5f['rgb'])
                 image = np.transpose(image, (1, 2, 0))
                 depth_gt = np.array(h5f['depth']) * 1000
+                image = torchvision.transforms.ToPILImage()(image)
+                depth_gt = torchvision.transforms.ToPILImage()(depth_gt)
             else:            
                 image = Image.open(image_path)
                 depth_gt = Image.open(depth_path)
