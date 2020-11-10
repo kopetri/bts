@@ -102,9 +102,9 @@ class DataLoadPreprocess(Dataset):
             else:
                 image_path = os.path.join(self.args.data_path, "./" + sample_path.split()[0])
                 depth_path = os.path.join(self.args.gt_path, "./" + sample_path.split()[1])
-    
-            image = Image.open(image_path)
-            depth_gt = Image.open(depth_path)
+            s = (640, 480)
+            image = Image.open(image_path).resize(s)
+            depth_gt = Image.open(depth_path).resize(s)
             
             if self.args.do_kb_crop is True:
                 height = image.height
@@ -144,14 +144,14 @@ class DataLoadPreprocess(Dataset):
                 data_path = self.args.data_path
 
             image_path = os.path.join(data_path, "./" + sample_path.split()[0])
-            image = np.asarray(Image.open(image_path), dtype=np.float32) / 255.0
+            image = np.asarray(Image.open(image_path).resize((640, 480)), dtype=np.float32) / 255.0
 
             if self.mode == 'online_eval':
                 gt_path = self.args.gt_path_eval
                 depth_path = os.path.join(gt_path, "./" + sample_path.split()[1])
                 has_valid_depth = False
                 try:
-                    depth_gt = Image.open(depth_path)
+                    depth_gt = Image.open(depth_path).resize((640, 480))
                     has_valid_depth = True
                 except IOError:
                     depth_gt = False

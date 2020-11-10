@@ -1,0 +1,32 @@
+--mode train
+--model_name bts_floorplan3d_noreflection_pytorch_test
+--encoder densenet161_bts
+--dataset nyu
+--data_path /mnt/hdd/shared_datasets/Floorplan3D
+--gt_path /mnt/hdd/shared_datasets/Floorplan3D
+--filenames_file /mnt/hdd/shared_datasets/Floorplan3D/noreflection.train.txt
+--batch_size 4
+--num_epochs 50
+--learning_rate 1e-4
+--weight_decay 1e-2
+--adam_eps 1e-3
+--num_threads 1
+--input_height 416
+--input_width 544
+--max_depth 10
+--do_random_rotate
+--degree 2.5
+--log_directory ./models/
+--multiprocessing_distributed
+--dist_url tcp://127.0.0.1:2345
+
+--log_freq 100
+--do_online_eval
+--eval_freq 500
+--data_path_eval /mnt/hdd/shared_datasets/Floorplan3D
+--gt_path_eval /mnt/hdd/shared_datasets/Floorplan3D
+--filenames_file_eval /mnt/hdd/shared_datasets/Floorplan3D/noreflection.val.txt
+--min_depth_eval 1e-3
+--max_depth_eval 10
+--eval_summary_directory ./models/eval/
+--eigen_crop
